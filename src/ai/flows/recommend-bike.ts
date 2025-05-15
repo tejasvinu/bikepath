@@ -1,90 +1,82 @@
-// This file is machine-generated - edit with care!
+"use client";
 
-'use server';
-/**
- * @fileOverview A bike recommendation AI agent.
- *
- * - recommendBike - A function that handles the bike recommendation process.
- * - RecommendBikeInput - The input type for the recommendBike function.
- * - RecommendBikeOutput - The return type for the recommendBike function.
- */
+import Image from "next/image";
+import type { RecommendMotorcycleOutput } from "@/ai/flows/recommend-motorcycle";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { CheckCircle, Info } from "lucide-react";
 
-import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
-
-const RecommendBikeInputSchema = z.object({
-  ridingStyle: z
-    .string()
-    .describe("What is your preferred riding style? Options: 'Road cycling', 'Mountain biking', 'Commuting', 'Touring'."),
-  terrain: z
-    .string()
-    .describe('What type of terrain will you be riding on? Options: Pavement, Gravel, Trails, Mixed.'),
-  budget: z
-    .number()
-    .describe('What is your budget for the bicycle in USD?'),
-  distance: z
-    .string()
-    .describe('What is the typical distance you plan to ride? Options: Short (less than 10 miles), Medium (10-30 miles), Long (30+ miles).'),
-  frequency: z
-    .string()
-    .describe('How often do you plan to ride? Options: Few times a month, Few times a week, Daily.'),
-  experienceLevel: z
-    .string()
-    .describe('What is your experience level with cycling? Options: Beginner, Intermediate, Advanced.'),
-  additionalPreferences: z
-    .string()
-    .describe('Any additional preferences or requirements for the bicycle.'),
-});
-export type RecommendBikeInput = z.infer<typeof RecommendBikeInputSchema>;
-
-const RecommendBikeOutputSchema = z.object({
-  brand: z.string().describe('The recommended brand of the bicycle.'),
-  model: z.string().describe('The recommended model of the bicycle.'),
-  description: z.string().describe('A detailed description of the bicycle and its features.'),
-  price: z.number().describe('The price of the recommended bicycle in USD.'),
-  image: z.string().describe('The URL of an image of the recommended bicycle.'),
-  highlights: z.array(z.string()).describe('A list of the key highlights of the recommended bicycle.'),
-});
-
-export type RecommendBikeOutput = z.infer<typeof RecommendBikeOutputSchema>;
-
-export async function recommendBike(input: RecommendBikeInput): Promise<RecommendBikeOutput> {
-  return recommendBikeFlow(input);
+interface MotorcycleRecommendationProps {
+  recommendation: RecommendMotorcycleOutput;
 }
 
-const prompt = ai.definePrompt({
-  name: 'recommendBikePrompt',
-  input: {schema: RecommendBikeInputSchema},
-  output: {schema: RecommendBikeOutputSchema},
-  prompt: `You are an expert bicycle recommendation engine. A user will provide their preferences and needs for a bicycle, and you will recommend the most suitable bicycle for them from the database.
+export function MotorcycleRecommendation({ recommendation }: MotorcycleRecommendationProps) {
+  const { brand, model, description, price, image, highlights, suitabilityReason } = recommendation;
 
-  Consider the following information when recommending a bicycle:
+  return (
+    <Card className="w-full max-w-2xl overflow-hidden shadow-xl rounded-xl">
+      <CardHeader className="p-0">
+        {image ? (
+          <div className="relative w-full h-64 md:h-80">
+            <Image
+              src={image}
+              alt={`${brand} ${model}`}
+              layout="fill"
+              objectFit="cover"
+              data-ai-hint="motorcycle india"
+            />
+          </div>
+        ) : (
+          <div className="w-full h-64 md:h-80 bg-muted flex items-center justify-center" data-ai-hint="motorcycle silhouette">
+            <p className="text-muted-foreground">No Image Available</p>
+          </div>
+        )}
+      </CardHeader>
+      <CardContent className="p-6 space-y-6">
+        <CardTitle className="text-3xl font-bold text-primary">
+          {brand} {model}
+        </CardTitle>
+        <CardDescription className="text-lg text-foreground/90 leading-relaxed">
+          {description}
+        </CardDescription>
 
-  Riding Style: {{{ridingStyle}}}
-  Terrain: {{{terrain}}}
-  Budget: {{{budget}}}
-  Distance: {{{distance}}}
-  Frequency: {{{frequency}}}
-  Experience Level: {{{experienceLevel}}}
-  Additional Preferences: {{{additionalPreferences}}}
-
-  Based on the above information, recommend a specific bicycle brand and model, and provide a detailed description of the bicycle and its features. Include the price of the bicycle, the URL of an image of the bicycle, and a list of the key highlights of the bicycle.
-
-  Ensure that the recommended bicycle is within the user's budget and suitable for their riding style, terrain, distance, frequency, and experience level.
-
-  Return the recommendation in the specified JSON format.
-  `,
-});
-
-const recommendBikeFlow = ai.defineFlow(
-  {
-    name: 'recommendBikeFlow',
-    inputSchema: RecommendBikeInputSchema,
-    outputSchema: RecommendBikeOutputSchema,
-  },
-  async input => {
-    const {output} = await prompt(input);
-    return output!;
-  }
-);
-
+        {suitabilityReason && (
+          <div className="p-4 bg-accent/10 rounded-lg border border-accent/30">
+            <h3 className="text-lg font-semibold mb-1.5 text-accent flex items-center">
+              <Info className="h-5 w-5 mr-2 shrink-0" />
+              Why this is a good fit for you in India:
+            </h3>
+            <p className="text-sm text-accent/90">{suitabilityReason}</p>
+          </div>
+        )}
+        
+        <div>
+          <h3 className="text-xl font-semibold mb-2 text-foreground">Key Highlights:</h3>
+          <ul className="space-y-1.5 list-inside">
+            {highlights.map((highlight, index) => (
+              <li key={index} className="flex items-start">
+                <CheckCircle className="h-5 w-5 text-green-600 mr-2 mt-0.5 shrink-0" />
+                <span className="text-foreground/80">{highlight}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </CardContent>
+      <CardFooter className="bg-secondary/50 p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0 rounded-b-xl">
+        <p className="text-2xl font-bold text-primary">
+          Price: ₹{price.toLocaleString('en-IN')}
+        </p>
+        <Badge variant="default" className="bg-accent text-accent-foreground text-sm px-4 py-1.5 shadow">
+          Recommended Ride
+        </Badge>
+      </CardFooter>
+    </Card>
+  );
+}

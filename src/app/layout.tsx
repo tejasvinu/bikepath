@@ -1,3 +1,4 @@
+
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
@@ -14,8 +15,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'BikePath - Find Your Perfect Ride',
-  description: 'AI-powered bicycle recommendation engine.',
+  title: 'MotorRide India - Your Perfect Motorcycle Awaits',
+  description: 'AI-powered motorcycle recommendation engine for the Indian market.',
 };
 
 export default function RootLayout({
