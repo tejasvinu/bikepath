@@ -48,3 +48,24 @@ export const BikeCardSchema = BikeSchema.pick({
 });
 
 export type BikeCardType = z.infer<typeof BikeCardSchema>;
+
+// Schema for bike attributes used in the recommendation system
+export const BikeAttributesSchema = z.object({
+  type: z.string().describe('The type of the bike (e.g., Hybrid, Commuter, Mountain, Road)'),
+  terrain: z.array(z.string()).describe('The types of terrain this bike is suitable for'),
+  primary_use: z.string().describe('The primary intended use of the bike (e.g., Commuting, Recreation, Exercise)'),
+  suspension: z.string().describe('The type of suspension, if any (e.g., None, Front Fork, Full)'),
+  gears: z.string().describe('Description of the gear system'),
+  budget_tier: z.string().describe('The budget tier (e.g., Entry, Mid, Premium)'),
+  frame_material: z.string().describe('The material the frame is made of (e.g., Aluminum, Steel, Carbon Fiber)')
+});
+
+// Schema for a bike candidate in the recommendation system
+export const BikeCandidateSchema = z.object({
+  id: z.string().describe('Unique identifier for the bike'),
+  name: z.string().describe('The name/model of the bike'),
+  attributes: BikeAttributesSchema
+});
+
+export type BikeAttributes = z.infer<typeof BikeAttributesSchema>;
+export type BikeCandidate = z.infer<typeof BikeCandidateSchema>;

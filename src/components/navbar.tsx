@@ -2,7 +2,7 @@
 "use client";
 
 import Link from 'next/link';
-import { Zap, List } from 'lucide-react'; // Using Zap as in homepage, List for bike list
+import { Zap, List, Bike } from 'lucide-react'; // Added Bike icon
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 
@@ -12,6 +12,7 @@ export function Navbar() {
   const navItems = [
     { href: '/', label: 'Home', icon: <Zap className="h-5 w-5" /> },
     { href: '/bikes', label: 'Motorcycles', icon: <List className="h-5 w-5" /> },
+    { href: '/bikes/recommend', label: 'Find a Bike', icon: <Bike className="h-5 w-5" /> },
   ];
 
   return (
