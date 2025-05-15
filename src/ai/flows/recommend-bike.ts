@@ -72,8 +72,7 @@ const prompt = ai.definePrompt({
 
   Ensure that the recommended bicycle is within the user's budget and suitable for their riding style, terrain, distance, frequency, and experience level.
 
-  Return the recommendation in the following JSON format:
-  {{$type: RecommendBikeOutput}}
+  Return the recommendation in the specified JSON format.
   `,
 });
 
@@ -88,3 +87,4 @@ const recommendBikeFlow = ai.defineFlow(
     return output!;
   }
 );
+
