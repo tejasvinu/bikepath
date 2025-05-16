@@ -32,6 +32,7 @@ export interface BikeRecommendationResult {
 export interface BikeRecommendationState {
   conversationHistory: ConversationTurn[];
   currentQuestion: string | null;
+  currentQuestionOptions: string[] | null; // Added to store options for the current question
   bikeCandidates: any[]; // Using any for simplicity, should use BikeCandidate in real implementation
   isLoading: boolean;
   result: BikeRecommendationResult | null;

@@ -91,6 +91,7 @@ export function useBikeRecommendation(
   const [state, setState] = useState<BikeRecommendationState>({
     conversationHistory: [],
     currentQuestion: initialQuestion,
+    currentQuestionOptions: null, // Initialize currentQuestionOptions
     bikeCandidates: initialBikeCandidates,
     isLoading: false,
     result: null,
@@ -134,6 +135,7 @@ export function useBikeRecommendation(
         setState(prev => ({
           ...prev,
           currentQuestion: result.next_question,
+          currentQuestionOptions: result.next_question_options, // Update currentQuestionOptions
           bikeCandidates: updatedCandidates,
           isLoading: false
         }));
@@ -141,6 +143,7 @@ export function useBikeRecommendation(
         setState(prev => ({
           ...prev,
           currentQuestion: null,
+          currentQuestionOptions: null, // Clear options on recommendation
           bikeCandidates: updatedCandidates,
           result: result.final_recommendation,
           isLoading: false
@@ -150,6 +153,7 @@ export function useBikeRecommendation(
         setState(prev => ({
           ...prev,
           currentQuestion: null,
+          currentQuestionOptions: null, // Clear options on error
           bikeCandidates: [],
           error: result.error_message || "No bikes match your criteria.",
           isLoading: false
@@ -170,6 +174,7 @@ export function useBikeRecommendation(
     setState({
       conversationHistory: [],
       currentQuestion: initialQuestion,
+      currentQuestionOptions: null, // Reset currentQuestionOptions
       bikeCandidates: initialBikeCandidates,
       isLoading: false,
       result: null,

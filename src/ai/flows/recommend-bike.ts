@@ -56,6 +56,7 @@ const BikeRecommendationSchema = z.object({
 const BikeRecommendOutputSchema = z.object({
   status: z.enum(['ASKING_QUESTION', 'RECOMMENDATION_MADE', 'NO_MATCH_FOUND']).describe('The current status of the recommendation process'),
   next_question: z.string().nullable().describe('The next question to ask the user, or null if not applicable'),
+  next_question_options: z.array(z.string()).nullable().describe('An array of options for the next question, if status is ASKING_QUESTION. The user should select one.'),
   updated_bike_candidates_ids: z.array(z.string()).describe('IDs of bikes still considered viable after processing the user input'),
   final_recommendation: BikeRecommendationSchema.nullable().describe('The final bike recommendation if status is RECOMMENDATION_MADE, otherwise null'),
   error_message: z.string().nullable().describe('Any error message if status is NO_MATCH_FOUND or other errors occurred')
@@ -84,19 +85,21 @@ Your task is to:
 3. Determine the next step in the conversation.
 
 If more than one viable bike remains:
-- Identify attributes that differentiate the remaining bikes (such as suspension type, frame material, etc.)
-- Ask a clear, concise question to help differentiate user preference
-- Return status "ASKING_QUESTION"
+- Identify attributes that differentiate the remaining bikes (such as suspension type, frame material, primary use, etc.).
+- Ask a clear, concise question to help differentiate user preference.
+- Provide a list of 2-5 distinct options for the user to choose from for that question. These options should be based on the attributes of the remaining viable bikes.
+- Return status "ASKING_QUESTION", the "next_question", and the "next_question_options".
 
 If exactly one viable bike remains:
-- Provide a personalized recommendation
-- Return status "RECOMMENDATION_MADE"
+- Provide a personalized recommendation.
+- Return status "RECOMMENDATION_MADE", and set "next_question" and "next_question_options" to null.
 
 If no viable bikes remain:
-- Provide a helpful error message
-- Return status "NO_MATCH_FOUND"
+- Provide a helpful error message.
+- Return status "NO_MATCH_FOUND", and set "next_question" and "next_question_options" to null.
 
-Always maintain a conversational, helpful tone. Tailor your questions to effectively narrow down the selection.
+Always maintain a conversational, helpful tone. Tailor your questions and options to effectively narrow down the selection.
+Ensure that the options provided are directly relevant to the question and help in distinguishing between the remaining bike candidates.
 `,
 });
 
