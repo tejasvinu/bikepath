@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useCallback } from 'react';
@@ -91,7 +92,7 @@ export function useBikeRecommendation(
   const [state, setState] = useState<BikeRecommendationState>({
     conversationHistory: [],
     currentQuestion: initialQuestion,
-    currentQuestionOptions: null, // Initialize currentQuestionOptions
+    currentQuestionOptions: null,
     bikeCandidates: initialBikeCandidates,
     isLoading: false,
     result: null,
@@ -123,7 +124,7 @@ export function useBikeRecommendation(
       };
       
       // Call the AI flow
-      const result = await recommendBike(input);
+      const result: BikeRecommendOutput = await recommendBike(input);
       
       // Update bike candidates with the filtered list
       const updatedCandidates = state.bikeCandidates.filter(bike => 
@@ -135,7 +136,7 @@ export function useBikeRecommendation(
         setState(prev => ({
           ...prev,
           currentQuestion: result.next_question,
-          currentQuestionOptions: result.next_question_options, // Update currentQuestionOptions
+          currentQuestionOptions: (result as any).next_question_options || null, // Handle if field is missing
           bikeCandidates: updatedCandidates,
           isLoading: false
         }));
@@ -143,7 +144,7 @@ export function useBikeRecommendation(
         setState(prev => ({
           ...prev,
           currentQuestion: null,
-          currentQuestionOptions: null, // Clear options on recommendation
+          currentQuestionOptions: null, 
           bikeCandidates: updatedCandidates,
           result: result.final_recommendation,
           isLoading: false
@@ -153,7 +154,7 @@ export function useBikeRecommendation(
         setState(prev => ({
           ...prev,
           currentQuestion: null,
-          currentQuestionOptions: null, // Clear options on error
+          currentQuestionOptions: null, 
           bikeCandidates: [],
           error: result.error_message || "No bikes match your criteria.",
           isLoading: false
@@ -174,7 +175,7 @@ export function useBikeRecommendation(
     setState({
       conversationHistory: [],
       currentQuestion: initialQuestion,
-      currentQuestionOptions: null, // Reset currentQuestionOptions
+      currentQuestionOptions: null,
       bikeCandidates: initialBikeCandidates,
       isLoading: false,
       result: null,
@@ -188,3 +189,4 @@ export function useBikeRecommendation(
     startOver
   };
 }
+
