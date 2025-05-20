@@ -16,7 +16,7 @@ const DetailedSpecificationsSchema = z.object({
   "App Features": z.record(z.string()).optional(),
 }).catchall(z.record(z.string())); // Allows other keys with string record values
 
-export const BikeSchema = z.object({
+export const MotorcycleDataSchema = z.object({
   _id: z.object({ $oid: z.string() }),
   source_file: z.string().optional(),
   page_url: z.string().url().optional(),
@@ -32,10 +32,10 @@ export const BikeSchema = z.object({
   detailed_specifications: DetailedSpecificationsSchema.optional(),
 });
 
-export type Bike = z.infer<typeof BikeSchema>;
+export type MotorcycleData = z.infer<typeof MotorcycleDataSchema>;
 
 // Simplified version for card display
-export const BikeCardSchema = BikeSchema.pick({
+export const MotorcycleCardSchema = MotorcycleDataSchema.pick({
   _id: true,
   image_url: true,
   name: true,
@@ -47,25 +47,28 @@ export const BikeCardSchema = BikeSchema.pick({
   page_url: true, // for linking to details page or external
 });
 
-export type BikeCardType = z.infer<typeof BikeCardSchema>;
+export type MotorcycleCardType = z.infer<typeof MotorcycleCardSchema>;
 
-// Schema for bike attributes used in the recommendation system
-export const BikeAttributesSchema = z.object({
-  type: z.string().describe('The type of the bike (e.g., Hybrid, Commuter, Mountain, Road)'),
-  terrain: z.array(z.string()).describe('The types of terrain this bike is suitable for'),
-  primary_use: z.string().describe('The primary intended use of the bike (e.g., Commuting, Recreation, Exercise)'),
-  suspension: z.string().describe('The type of suspension, if any (e.g., None, Front Fork, Full)'),
-  gears: z.string().describe('Description of the gear system'),
-  budget_tier: z.string().describe('The budget tier (e.g., Entry, Mid, Premium)'),
-  frame_material: z.string().describe('The material the frame is made of (e.g., Aluminum, Steel, Carbon Fiber)')
+// Schema for motorcycle attributes used in the recommendation system
+export const MotorcycleAttributesSchema = z.object({
+  type: z.string().describe('The type of the motorcycle (e.g., Commuter, Sport, Cruiser, Adventure/Off-road, Scooter)'),
+  engineDisplacement: z.string().describe('Engine displacement category (e.g., "100-125cc", "150-200cc", "200-300cc", "300cc+")'),
+  mileage: z.string().describe('Fuel efficiency category (e.g., "High", "Medium", "Low", or "40-50 kmpl")'),
+  primaryUse: z.string().describe('The primary intended use (e.g., City Commute, Highway Touring, Off-road Adventures, Weekend Rides)'),
+  budgetTier: z.string().describe('The budget tier based on Indian market (e.g., Entry (<1 lakh), Mid (1-2 lakhs), Premium (2-3 lakhs), Super Premium (>3 lakhs))'),
+  keyFeatures: z.array(z.string()).describe('Notable features (e.g., "ABS", "Digital Console", "LED Headlights", "Pillion Comfort")'),
+  brand: z.string().describe('Brand of the motorcycle (e.g., Hero, Bajaj, Royal Enfield, TVS, Honda, Yamaha, Suzuki, KTM, Jawa, Yezdi, Ola Electric, Ather)')
 });
 
-// Schema for a bike candidate in the recommendation system
-export const BikeCandidateSchema = z.object({
-  id: z.string().describe('Unique identifier for the bike'),
-  name: z.string().describe('The name/model of the bike'),
-  attributes: BikeAttributesSchema
+// Schema for a motorcycle candidate in the recommendation system
+export const MotorcycleCandidateSchema = z.object({
+  id: z.string().describe('Unique identifier for the motorcycle (usually _id.$oid from MongoDB)'),
+  name: z.string().describe('The name/model of the motorcycle'),
+  brand: z.string().describe('The brand of the motorcycle'),
+  attributes: MotorcycleAttributesSchema,
+  priceNumeric: z.number().describe('Approximate ex-showroom price in INR'),
+  imageUrl: z.string().url().optional().describe('URL of an image of the motorcycle')
 });
 
-export type BikeAttributes = z.infer<typeof BikeAttributesSchema>;
-export type BikeCandidate = z.infer<typeof BikeCandidateSchema>;
+export type MotorcycleAttributes = z.infer<typeof MotorcycleAttributesSchema>;
+export type MotorcycleCandidate = z.infer<typeof MotorcycleCandidateSchema>;
