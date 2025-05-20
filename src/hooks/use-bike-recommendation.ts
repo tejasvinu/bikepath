@@ -82,17 +82,28 @@ const defaultBikeCandidates: BikeCandidate[] = [
  * @param initialBikeCandidates Optional array of initial bike candidates
  */
 export function useBikeRecommendation(
-  initialQuestion: string = "What type of terrain will you primarily ride on?",
+  initialQuestion: string = "What type of terrain will you primarily ride on? Select one of the options below:",
   initialBikeCandidates: BikeCandidate[] = defaultBikeCandidates
 ): {
   state: BikeRecommendationState;
   submitUserResponse: (response: string) => Promise<void>;
   startOver: () => void;
-} {
+} {  // Initial options based on the terrain attributes in our bike candidates
+  const getInitialOptions = () => {
+    // Extract unique terrain types from all bike candidates
+    const allTerrainTypes = new Set<string>();
+    initialBikeCandidates.forEach(bike => {
+      bike.attributes.terrain.forEach(terrain => {
+        allTerrainTypes.add(terrain);
+      });
+    });
+    return Array.from(allTerrainTypes);
+  };
+
   const [state, setState] = useState<BikeRecommendationState>({
     conversationHistory: [],
     currentQuestion: initialQuestion,
-    currentQuestionOptions: null,
+    currentQuestionOptions: getInitialOptions(),
     bikeCandidates: initialBikeCandidates,
     isLoading: false,
     result: null,
@@ -130,13 +141,12 @@ export function useBikeRecommendation(
       const updatedCandidates = state.bikeCandidates.filter(bike => 
         result.updated_bike_candidates_ids.includes(bike.id)
       );
-      
-      // Handle different statuses
+        // Handle different statuses
       if (result.status === "ASKING_QUESTION") {
         setState(prev => ({
           ...prev,
           currentQuestion: result.next_question,
-          currentQuestionOptions: (result as any).next_question_options || null, // Handle if field is missing
+          currentQuestionOptions: result.next_question_options, // Properly typed now
           bikeCandidates: updatedCandidates,
           isLoading: false
         }));

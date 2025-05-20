@@ -14,18 +14,8 @@ interface BikeQuestionnaireProps {
 export function BikeQuestionnaire({ onComplete }: BikeQuestionnaireProps) {
   const [userResponse, setUserResponse] = useState<string>("");
   const { state, submitUserResponse } = useBikeRecommendation();
-
-  // Handle form submission
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!userResponse.trim()) return;
-
-    await submitUserResponse(userResponse);
-    setUserResponse(""); // Clear input field
-
-    // If we have a result or error, pass it up to the parent component
-    // This logic might need adjustment based on when onComplete should be called
-    // For now, it calls onComplete when there's no current question (recommendation or error)
+  // Helper function to check if we should complete the process
+  const checkForCompleteState = () => {
     if (!state.currentQuestion && (state.result || state.error)) {
       const result: BikeRecommendOutput = {
         status: state.result ? 'RECOMMENDATION_MADE' : state.error ? 'NO_MATCH_FOUND' : 'ASKING_QUESTION',
@@ -39,20 +29,22 @@ export function BikeQuestionnaire({ onComplete }: BikeQuestionnaireProps) {
     }
   };
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!userResponse.trim()) return;
+
+    await submitUserResponse(userResponse);
+    setUserResponse(""); // Clear input field
+    
+    // Check if we need to complete the flow
+    checkForCompleteState();
+  };
+
   const handleOptionClick = async (option: string) => {
     await submitUserResponse(option);
-    // onComplete logic might also be relevant here if an option click leads to a final state
-    if (!state.currentQuestion && (state.result || state.error)) {
-      const result: BikeRecommendOutput = {
-        status: state.result ? 'RECOMMENDATION_MADE' : state.error ? 'NO_MATCH_FOUND' : 'ASKING_QUESTION',
-        next_question: null,
-        next_question_options: null,
-        updated_bike_candidates_ids: state.bikeCandidates.map(bike => bike.id),
-        final_recommendation: state.result,
-        error_message: state.error
-      };
-      onComplete(result);
-    }
+    
+    // Check if we need to complete the flow
+    checkForCompleteState();
   };
 
   return (
